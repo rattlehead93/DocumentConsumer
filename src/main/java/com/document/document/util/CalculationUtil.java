@@ -18,7 +18,6 @@ public class CalculationUtil {
         IntStream.range(0, n)
                 .forEach(i -> IntStream.range(i, n)
                         .forEach( j -> set.add(s.substring(i, j + 1))));
-        System.out.println(set);
         return set.size();
     }
 }
