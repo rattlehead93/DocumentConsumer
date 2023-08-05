@@ -1,14 +1,10 @@
 package com.document.document.configuration;
 
-import org.springframework.amqp.core.AmqpTemplate;
-import org.springframework.amqp.core.Binding;
-import org.springframework.amqp.core.BindingBuilder;
-import org.springframework.amqp.core.DirectExchange;
+import com.document.document.listener.RabbitMQListener;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
-import org.springframework.amqp.support.converter.MessageConverter;
+import org.springframework.amqp.rabbit.listener.MessageListenerContainer;
+import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,30 +21,44 @@ public class RabbitMQConfiguration {
     @Value("${rabbitmq.routing.key}")
     String routingKey;
 
+    private final RabbitMQListener rabbitMQListener;
+
+    public RabbitMQConfiguration(final RabbitMQListener rabbitMQListener) {
+        this.rabbitMQListener = rabbitMQListener;
+    }
+
     @Bean
     Queue queue() {
         return new Queue(queueName, false);
     }
 
     @Bean
-    DirectExchange exchange() {
-        return new DirectExchange(exchange);
+    MessageListenerContainer messageListenerContainer(ConnectionFactory connectionFactory ) {
+        SimpleMessageListenerContainer simpleMessageListenerContainer = new SimpleMessageListenerContainer();
+        simpleMessageListenerContainer.setConnectionFactory(connectionFactory);
+        simpleMessageListenerContainer.setQueues(queue());
+        simpleMessageListenerContainer.setMessageListener(rabbitMQListener);
+        return simpleMessageListenerContainer;
+
     }
 
-    @Bean
-    Binding binding(Queue queue, DirectExchange exchange) {
-        return BindingBuilder.bind(queue).to(exchange).with(routingKey);
-    }
+    //create custom connection factory
+	/*@Bean
+	ConnectionFactory connectionFactory() {
+		CachingConnectionFactory cachingConnectionFactory = new CachingConnectionFactory("localhost");
+		cachingConnectionFactory.setUsername(username);
+		cachingConnectionFactory.setUsername(password);
+		return cachingConnectionFactory;
+	}*/
 
-    @Bean
-    public MessageConverter jsonMessageConverter() {
-        return new Jackson2JsonMessageConverter();
-    }
+    //create MessageListenerContainer using custom connection factory
+	/*@Bean
+	MessageListenerContainer messageListenerContainer() {
+		SimpleMessageListenerContainer simpleMessageListenerContainer = new SimpleMessageListenerContainer();
+		simpleMessageListenerContainer.setConnectionFactory(connectionFactory());
+		simpleMessageListenerContainer.setQueues(queue());
+		simpleMessageListenerContainer.setMessageListener(new RabbitMQListner());
+		return simpleMessageListenerContainer;
 
-    @Bean
-    public AmqpTemplate rabbitTemplate(final ConnectionFactory connectionFactory) {
-        final RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
-        rabbitTemplate.setMessageConverter(jsonMessageConverter());
-        return rabbitTemplate;
-    }
+	}*/
 }

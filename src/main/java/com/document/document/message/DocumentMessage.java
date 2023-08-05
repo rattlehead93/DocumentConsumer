@@ -6,13 +6,31 @@ import java.io.Serializable;
 
 public class DocumentMessage implements Serializable {
     @JsonProperty("id")
-    String id;
+    Integer id;
 
     @JsonProperty("content")
     String content;
 
-    public DocumentMessage(String id, String content) {
+    DocumentMessage() {}
+
+    public DocumentMessage(Integer id, String content) {
         this.id = id;
         this.content = content;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    @Override
+    public String toString() {
+        return "DocumentMessage{" +
+                "id='" + id + '\'' +
+                ", content='" + content + '\'' +
+                '}';
     }
 }
