@@ -13,10 +13,12 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class RabbitMQListenerTest {
     ObjectMapper objectMapper = new JsonMapper().getInstance();
+
     RabbitMQListener rabbitMQListener = new RabbitMQListener(objectMapper);
 
     final String validDocumentBody = "{\"id\":1,\"content\":\"abdcd\"}";
     final String invalidDocumentBody = "{\"id\":1,\"con:\"abdcd\"}";
+
     final byte[] invalidMessageBytes = new byte[] {123, 34, 105, 100, 34, 58, 49};
     final byte[] validMessageBytes = new byte[] {123, 34, 105, 100, 34, 58, 49, 44, 34, 99, 111, 110, 116, 101, 110,
                                                    116, 34, 58, 34, 97, 98, 100, 99, 100, 34, 125};
@@ -31,7 +33,7 @@ class RabbitMQListenerTest {
     }
 
     @Test
-    public void throwsJsonProcessingExceptionWhenMessageIsNotValid() throws JsonProcessingException {
+    public void throwsJsonProcessingExceptionWhenMessageIsNotValid() {
         assertThrows(JsonProcessingException.class, () -> rabbitMQListener.parseMessage(invalidDocumentBody));
     }
 

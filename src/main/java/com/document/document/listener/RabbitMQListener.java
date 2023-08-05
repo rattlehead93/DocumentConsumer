@@ -35,7 +35,7 @@ public class RabbitMQListener implements MessageListener {
             System.out.println("Received document message : " + documentMessage);
             return documentMessage;
         } catch (final JsonProcessingException ex) {
-            System.out.println("Invalid json format received from queue.");
+            System.err.println("Invalid json format received from queue.");
             System.err.println("Received invalid message: " + messageBody);
             throw new RuntimeException("Invalid message received from queue.");
         }
