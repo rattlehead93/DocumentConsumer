@@ -10,9 +10,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.sql.SQLException;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -33,7 +30,7 @@ class DocumentProcessingServiceTest {
 
     @Test
     public void successfullySavesProcessedDocumentWhenNoErrorsInSaving() {
-        when(processedDocumentRepository.save(processedDocument)).thenReturn(processedDocument);
+        when(processedDocumentRepository.save(any())).thenReturn(processedDocument);
 
         ProcessedDocument processed = documentProcessingService
                 .processDocument(new DocumentMessage(1L, "abc"));
@@ -46,7 +43,7 @@ class DocumentProcessingServiceTest {
         when(processedDocumentRepository.save(any())).thenThrow(RuntimeException.class);
         when(failedDocumentRepository.save(any())).thenReturn(new FailedDocument());
 
-        assertThrows(Exception.class, ()->
+        assertThrows(Exception.class, () ->
                 documentProcessingService.processDocument(new DocumentMessage(1L, "abc")));
         verify(failedDocumentRepository, atLeast(1)).save(any());
     }

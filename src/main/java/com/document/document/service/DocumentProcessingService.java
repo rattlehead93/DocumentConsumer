@@ -11,8 +11,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.sql.SQLException;
-
 @Service
 public class DocumentProcessingService {
     private static final Logger log = LoggerFactory.getLogger(DocumentProcessingService.class);

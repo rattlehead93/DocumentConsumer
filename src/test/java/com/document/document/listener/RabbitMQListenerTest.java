@@ -1,6 +1,7 @@
 package com.document.document.listener;
 
 import com.document.document.message.DocumentMessage;
+import com.document.document.pojo.ProcessedDocument;
 import com.document.document.service.DocumentProcessingService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -15,11 +16,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class RabbitMQListenerTest {
+
     @Mock
     private ObjectMapper objectMapper;
 
@@ -67,8 +68,9 @@ class RabbitMQListenerTest {
     @Test
     public void onMessageThrowsNoExceptionWithValidMessage() throws JsonProcessingException {
         Message message = new Message(validMessageBytes);
+
         when(objectMapper.readValue(validDocumentBody, DocumentMessage.class)).thenReturn(validDocumentMessage);
-        doNothing().when(documentProcessingService).processDocument(any());
+        when(documentProcessingService.processDocument(any())).thenReturn(new ProcessedDocument());
         assertThatNoException().isThrownBy(() -> rabbitMQListener.onMessage(message));
     }
 }
